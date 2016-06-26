@@ -4,7 +4,7 @@ Author - Saurabh Bhan
 
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
-![](https://zippy.gfycat.com/SphericalCelebratedBull.webm)
+![](http://i.giphy.com/xT8qB5eZnH7HWdHltK.gif)
 
 ## How to use:
   
