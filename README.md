@@ -4,6 +4,8 @@ Author - Saurabh Bhan
 
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
+![](https://zippy.gfycat.com/SphericalCelebratedBull.webm)
+
 ## How to use:
   
   1. Download the wallpy.py
