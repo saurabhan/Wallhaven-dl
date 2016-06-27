@@ -11,6 +11,8 @@ import os
 import bs4
 import re
 import requests
+import time
+import tqdm
 
 os.makedirs('Wallhaven', exist_ok=True)
 url = 'https://alpha.wallhaven.cc/latest'
@@ -23,16 +25,13 @@ imgext = ['jpg', 'png', 'bmp']
 for i in range(len(imgid)):
     url = 'http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-%s.' % imgid[
         i]
-    iurl = url + imgext[0]
-    imgreq = requests.get(iurl)
-    er = imgreq.status_code
-    if er == 404:
-        iurl == url + imgext[1]
-        er2 = imgreq.status_code
-        if er2 == 404:
-            iurl == url + imgext[2]
-    print('Downloading: ' + iurl)
-    imageFile = open(os.path.join('Wallhaven', os.path.basename(iurl)), 'ab')
-    for chunk in imgreq.iter_content(100000):
-        imageFile.write(chunk)
-    imageFile.close()
+        for ext in imgext:
+            iurl = url + ext
+            imgreq = requests.get(iurl)
+            if imgreq.status_code == 200:
+                print('Downloading: ' + iurl)
+                with open(os.path.join('Wallhaven', os.path.basename(iurl)), 'ab') as imageFile:
+                    for chunk in tqdm.tqdm(imgreq.iter_content(1024), total=(int(imgreq.headers['content-length']) / 1024), unit='KB'):
+                        time.sleep(0.01)
+                        imageFile.write(chunk)
+            break
