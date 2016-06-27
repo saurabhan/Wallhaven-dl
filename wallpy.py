@@ -21,6 +21,7 @@ soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
 soupid = soup.findAll('a', {'class': 'preview'})
 res = re.compile(r'\d+')
 imgid = res.findall(str(soupid))
+print('Number of Wallpapers to Download: ' + str(len(imgid)))
 imgext = ['jpg', 'png', 'bmp']
 for i in range(len(imgid)):
     url = 'http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-%s.' % imgid[
