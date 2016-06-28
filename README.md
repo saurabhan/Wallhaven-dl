@@ -1,10 +1,8 @@
 # Wallhaven-scraper
 
-Author - Saurabh Bhan
-
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
-![](http://i.giphy.com/xT8qB5eZnH7HWdHltK.gif)
+![](http://i.giphy.com/3o72FhQMHnv4BqvBkc.gif)
 
 ## How to use:
   
@@ -17,9 +15,12 @@ $ python3 wallpy.py
 
 ## Dependencies:
   
-  This project depends on Beautiful soup
-  Your can install beautiful soup via pip
+  This project depends on BeautifulSoup, Requests, tqdm, lxml
+  Your can install install the dependencies using the requirments.txt file and running
   ```
-  $ sudo pip3 install bs4
+  $ pip3 install -r requirments.txt
   ```
   
+
+
+Wallhaven-dl © 2016, Saurabh Bhan. Released under the ![MIT License.](http://mit-license.org/)
