@@ -2,7 +2,7 @@
 
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
-![](http://i.giphy.com/3o72FhQMHnv4BqvBkc.gif)
+![](https://raw.githubusercontent.com/GeekSpin/Wallhaven-dl/master/Images/wallhaven-dl.gif)
 
 ## How to use:
   
