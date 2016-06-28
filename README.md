@@ -1,4 +1,4 @@
-# Wallhaven-scraper
+# Wallhaven-dl
 
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
