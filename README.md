@@ -23,4 +23,4 @@ $ python3 wallpy.py
   
 
 
-Wallhaven-dl © 2016, Saurabh Bhan. Released under the ![MIT License.](http://mit-license.org/)
+Wallhaven-dl © 2016, Saurabh Bhan. Released under the ![MIT License](https://raw.githubusercontent.com/GeekSpin/Wallhaven-scraper/master/LICENSE).
