@@ -1,5 +1,5 @@
 ########################################################
-#        Program to Download Wallpapers from           #
+#         Script to Download Wallpapers from           #
 #                  alpha.wallhaven.cc                  #
 #                                                      #
 #                 Author - Saurabh Bhan                #
