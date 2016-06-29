@@ -2,15 +2,17 @@
 
 A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
 
-![](https://raw.githubusercontent.com/GeekSpin/Wallhaven-dl/master/Images/wallhaven-dl.gif)
+![](https://raw.githubusercontent.com/GeekSpin/Wallhaven-dl/master/Images/wallhaven-dl%20(1).gif)
 
 ## How to use:
   
   1. Download the wallpy.py
-  2. Move wallpy.py to the folder in which you want wallpapers to download.
+  2. Move wallhaven-dl.py to the folder in which you want wallpapers to download.
   3. run script 
+  4. It'll ask for option to choose categories or download the latest wallpapers, choose as per desired
+  5. enjoy!
 ```
-$ python3 wallpy.py
+$ python3 wallhaven-dl.py
 ```
 
 ## Dependencies:
