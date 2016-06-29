@@ -9,6 +9,7 @@
 ########################################################
 
 import os
+import getpass
 import bs4
 import re
 import requests
@@ -17,6 +18,12 @@ import time
 
 os.makedirs('Wallhaven', exist_ok=True)
 
+def login():
+    print('NSFW images require login')
+    username = input('Enter username: ')
+    password = getpass.getpass('Enter password: ')
+    req = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password})
+    return req.cookies
 
 def choice():
     print('''****************************************************************
@@ -55,30 +62,32 @@ def choice():
                             Purity Codes
 
     sfw - For 'Safe For Work'
+    sketchy - For 'Sketchy'
     nsfw - For 'Not Safe For Work'
-    both - For both 'SFW' and 'NSFW'
+    ws - For 'SFW' and 'Sketchy'
+    wn - for 'SFW' and 'NSFW'
+    sn - For 'Sketchy' and 'NSFW'
+    all - For 'SFW', 'Sketchy' and 'NSFW'
     ****************************************************************
     ''')
     pcode = input('Enter Purity: ')
-    SFW = '100'
-    NSFW = '010'
-    BOTH = '110'
-    if pcode.lower() == 'sfw':
-        ptag = SFW
-    elif pcode.lower() == "nsfw":
-        ptag = NSFW
-    elif pcode.lower() == "both":
-        ptag = BOTH
+    ptags = {'sfw':'100', 'sketchy':'010', 'nsfw':'001', 'ws':'110', 'wn':'101', 'sn':'011', 'all':'111'}
+    ptag = ptags[pcode]
+
+    if pcode in ['nsfw', 'wn', 'sn', 'all']:
+        cookies = login()
+    else:
+        cookies = dict()
 
     CATURL = 'https://alpha.wallhaven.cc/search?categories=' + \
         ctag + '&purity=' + ptag + '&page='
-    return CATURL
+    return (CATURL, cookies)
 
 
 def latest():
     print('Downloading latest')
     latesturl = 'https://alpha.wallhaven.cc/latest?page='
-    return latesturl
+    return (latesturl, dict())
 
 
 def main():
@@ -89,15 +98,15 @@ def main():
     Enter choice: ''')
 
     if Choice.lower() == 'yes':
-        BASEURL = choice()
+        BASEURL, cookies = choice()
     else:
-        BASEURL = latest()
+        BASEURL, cookies = latest()
 
     pgid = int(input('How Many pages you want to Download: '))
     print('Number of Wallpapers to Download: ' + str(24 * pgid))
     for i in range(1, pgid + 1):
         url = BASEURL + str(i)
-        urlreq = requests.get(url)
+        urlreq = requests.get(url, cookies=cookies)
         soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
         soupid = soup.findAll('a', {'class': 'preview'})
         res = re.compile(r'\d+')
@@ -108,7 +117,7 @@ def main():
                 i]
             for ext in imgext:
                 iurl = url + ext
-                imgreq = requests.get(iurl)
+                imgreq = requests.get(iurl, cookies=cookies)
                 if imgreq.status_code == 200:
                     print('Downloading: ' + iurl)
                     with open(os.path.join('Wallhaven', os.path.basename(iurl)), 'ab') as imageFile:
