@@ -1,6 +1,6 @@
 # Wallhaven-dl
 
-A wallhaven scraper which downloads all the wallpapers form the first page of aplha.wallhaven.cc
+A wallhaven scraper which downloads all the wallpapers form the first page of [alpha.wallhaven.cc](http://alpha.wallhaven.cc/)
 
 ![](https://raw.githubusercontent.com/GeekSpin/Wallhaven-dl/master/Images/wallhaven-dl.gif)
 
