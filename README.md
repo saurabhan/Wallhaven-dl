@@ -1,7 +1,9 @@
 # Wallhaven-dl
 
 ## UPDATE
-The script now comes with a serach funcionality, you can now serach and download wallpapers from the command line.
+###The script now comes with a serach functionality, you can now search and download wallpapers from the command line.
+
+---------------------------------------------------------------------
 
 A wallhaven scraper which downloads all the wallpapers form the first page of [alpha.wallhaven.cc](http://alpha.wallhaven.cc/)
 
