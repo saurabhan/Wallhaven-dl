@@ -124,7 +124,7 @@ def main():
                         for chunk in tqdm.tqdm(imgreq.iter_content(1024), total=(int(imgreq.headers['content-length']) / 1024), unit='KB'):
                             time.sleep(0.01)
                             imageFile.write(chunk)
-                break
+                    break
 
 if __name__ == '__main__':
     main()
