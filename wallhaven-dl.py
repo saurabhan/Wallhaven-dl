@@ -15,6 +15,7 @@ import re
 import requests
 import tqdm
 import time
+import urllib 
 
 os.makedirs('Wallhaven', exist_ok=True)
 
@@ -25,7 +26,7 @@ def login():
     req = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password})
     return req.cookies
 
-def choice():
+def category():
     print('''****************************************************************
                             Category Codes
 
@@ -89,18 +90,31 @@ def latest():
     latesturl = 'https://alpha.wallhaven.cc/latest?page='
     return (latesturl, dict())
 
+def search():
+    query = input('Enter search query: ')
+    searchurl = 'https://alpha.wallhaven.cc/search?q=' + \
+        urllib.parse.quote_plus(query) + '&page='
+    return (searchurl, dict())
 
 def main():
-    Choice = input('''Do you want to choose categories or want to download latest wallpapers:
-    Enter "yes" for choosing categories
-    Enter "no" for Downloading latest wallpapers
+    Choice = input('''Choose how you want to download the image:
 
-    Enter choice: ''')
+    Enter "category" for downloading wallpapers from specified categories
+    Enter "latest" for downloading latest wallpapers
+    Enter "search" for downloading wallpapers from search
 
-    if Choice.lower() == 'yes':
-        BASEURL, cookies = choice()
-    else:
+    Enter choice: ''').lower()
+    while Choice not in ['category', 'latest', 'search']:
+        if Choice != None:
+            print('You entered an incorrect value.')
+        choice = input('Enter choice: ')
+
+    if Choice == 'category':
+        BASEURL, cookies = category()
+    elif Choice == 'latest':
         BASEURL, cookies = latest()
+    elif Choice == 'search':
+        BASEURL, cookies = search()
 
     pgid = int(input('How Many pages you want to Download: '))
     print('Number of Wallpapers to Download: ' + str(24 * pgid))
