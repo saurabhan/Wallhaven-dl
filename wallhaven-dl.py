@@ -118,8 +118,9 @@ def main():
 
     pgid = int(input('How Many pages you want to Download: '))
     print('Number of Wallpapers to Download: ' + str(24 * pgid))
-    for i in range(1, pgid + 1):
-        url = BASEURL + str(i)
+    for j in range(1, pgid + 1):
+        totalImage = str(24 * pgid)
+        url = BASEURL + str(j)
         urlreq = requests.get(url, cookies=cookies)
         soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
         soupid = soup.findAll('a', {'class': 'preview'})
@@ -127,6 +128,7 @@ def main():
         imgid = res.findall(str(soupid))
         imgext = ['jpg', 'png', 'bmp']
         for i in range(len(imgid)):
+            currentImage = (((j - 1) * 24) + (i + 1))
             url = 'http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-%s.' % imgid[
                 i]
             for ext in imgext:
@@ -135,12 +137,13 @@ def main():
                 if not os.path.exists(osPath):
                     imgreq = requests.get(iurl, cookies=cookies)
                     if imgreq.status_code == 200:
+                        print("Downloading : %s - %s / %s" % ((os.path.basename(iurl)), currentImage , totalImage))
                         with open(osPath, 'ab') as imageFile:
                             for chunk in imgreq.iter_content(1024):
                                 imageFile.write(chunk)
                         break
                 else:
-                    print("%s already exist" % os.path.basename(iurl))
+                    print("%s already exist - %s / %s" % os.path.basename(iurl), currentImage , totalImage)
 
 if __name__ == '__main__':
     main()
