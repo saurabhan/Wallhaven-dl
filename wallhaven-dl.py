@@ -30,12 +30,12 @@ def category():
     print('''****************************************************************
                             Category Codes
 
-    all - Every wallpaper.
+    all     - Every wallpaper.
     general - For 'general' wallpapers only.
-    anime - For 'Anime' Wallpapers only.
-    people - For 'people' wallapapers only.
-    ga - For 'General' and 'Anime' wallapapers only.
-    gp - For 'General' and 'People' wallpapers only.
+    anime   - For 'Anime' Wallpapers only.
+    people  - For 'people' wallapapers only.
+    ga      - For 'General' and 'Anime' wallapapers only.
+    gp      - For 'General' and 'People' wallpapers only.
     ****************************************************************
     ''')
     ccode = input('Enter Category: ')
@@ -62,13 +62,13 @@ def category():
     ****************************************************************
                             Purity Codes
 
-    sfw - For 'Safe For Work'
+    sfw     - For 'Safe For Work'
     sketchy - For 'Sketchy'
-    nsfw - For 'Not Safe For Work'
-    ws - For 'SFW' and 'Sketchy'
-    wn - for 'SFW' and 'NSFW'
-    sn - For 'Sketchy' and 'NSFW'
-    all - For 'SFW', 'Sketchy' and 'NSFW'
+    nsfw    - For 'Not Safe For Work'
+    ws      - For 'SFW' and 'Sketchy'
+    wn      - For 'SFW' and 'NSFW'
+    sn      - For 'Sketchy' and 'NSFW'
+    all     - For 'SFW', 'Sketchy' and 'NSFW'
     ****************************************************************
     ''')
     pcode = input('Enter Purity: ')
@@ -131,14 +131,16 @@ def main():
                 i]
             for ext in imgext:
                 iurl = url + ext
-                imgreq = requests.get(iurl, cookies=cookies)
-                if imgreq.status_code == 200:
-                    print('Downloading: ' + iurl)
-                    with open(os.path.join('Wallhaven', os.path.basename(iurl)), 'ab') as imageFile:
-                        for chunk in tqdm.tqdm(imgreq.iter_content(1024), total=(int(imgreq.headers['content-length']) / 1024), unit='KB'):
-                            time.sleep(0.01)
-                            imageFile.write(chunk)
-                    break
+                osPath = os.path.join('Wallhaven', os.path.basename(iurl))
+                if not os.path.exists(osPath):
+                    imgreq = requests.get(iurl, cookies=cookies)
+                    if imgreq.status_code == 200:
+                        with open(osPath, 'ab') as imageFile:
+                            for chunk in imgreq.iter_content(1024):
+                                imageFile.write(chunk)
+                        break
+                else:
+                    print("%s already exist" % os.path.basename(iurl))
 
 if __name__ == '__main__':
     main()
