@@ -107,7 +107,7 @@ def main():
     while Choice not in ['category', 'latest', 'search']:
         if Choice != None:
             print('You entered an incorrect value.')
-        choice = input('Enter choice: ')
+        Choice = input('Enter choice: ')
 
     if Choice == 'category':
         BASEURL, cookies = category()
