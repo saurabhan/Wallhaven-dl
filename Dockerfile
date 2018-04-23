@@ -3,7 +3,7 @@ FROM python:3
 RUN mkdir -p /Wallhaven-dl/Wallhaven
 WORKDIR /Wallhaven-dl
 
-COPY requirments.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirments.txt
 
 COPY . .
