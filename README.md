@@ -27,9 +27,9 @@ $ python3 wallhaven-dl.py
 ## Dependencies:
   
   This project depends on BeautifulSoup, Requests, tqdm, lxml
-  Your can install install the dependencies using the requirments.txt file and running
+  Your can install install the dependencies using the requirements.txt file and running
   ```
-  $ pip3 install -r requirments.txt
+  $ pip3 install -r requirements.txt
   ```
   
 
