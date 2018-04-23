@@ -1,11 +1,11 @@
 # Wallhaven-dl
 
 ## UPDATE
-###The script now comes with a serach functionality, you can now search and download wallpapers from the command line.
+###The script now comes with a search functionality, you can now search and download wallpapers from the command line.
 
 ---------------------------------------------------------------------
 
-A wallhaven scraper which downloads all the wallpapers form the first page of [alpha.wallhaven.cc](http://alpha.wallhaven.cc/)
+A wallhaven scraper which downloads all the wallpapers from the first page of [alpha.wallhaven.cc](http://alpha.wallhaven.cc/)
 
 This Script now comes with categories and purity sort support.
 ###### NOTE- Downloading NSFW images require a [Wallhaven Account](https://alpha.wallhaven.cc/user/create)
@@ -18,7 +18,7 @@ This Script now comes with categories and purity sort support.
   1. Download the wallhaven-dl.py
   2. Move wallhaven-dl.py to the folder in which you want wallpapers to download.
   3. run script 
-  4. It'll ask for option to choose categories or download the latest wallpapers, choose as per desired
+  4. It'll ask you to choose a category, download the latest wallpapers or search, choose as per desired.
   5. enjoy!
 ```
 $ python3 wallhaven-dl.py
