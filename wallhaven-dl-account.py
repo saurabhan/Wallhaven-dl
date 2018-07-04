@@ -13,6 +13,7 @@ import requests
 import tqdm
 import time
 import urllib 
+import math
 
 os.makedirs('Wallhaven', exist_ok=True)
 
@@ -54,6 +55,9 @@ def dlcolecpage(urlcolecpage,cookies):
             else:
                 print("%s already exist" % os.path.basename(iurl))
 
+from tqdm import tqdm
+from math import *
+
 def main():
     cookies, username = login()
     userurl = 'https://alpha.wallhaven.cc/user/'+ username +'/favorites'
@@ -91,12 +95,14 @@ def main():
                 iurl = url + ext
                 osPath = os.path.join('Wallhaven', collectionName, os.path.basename(iurl))
                 if not os.path.exists(osPath):
-                    imgreq = requests.get(iurl, cookies=cookies)
+                    imgreq = requests.get(iurl, cookies=cookies, stream=True)
                     if imgreq.status_code == 200:
-                        print("Downloading : %s" % ((os.path.basename(iurl))))
+                        print("Downloading : %s " % ((os.path.basename(iurl))))
+                        total_size = int(imgreq.headers.get('content-length', 0))
                         with open(osPath, 'ab') as imageFile:
-                            for chunk in imgreq.iter_content(1024):
+                            for chunk in tqdm(imgreq.iter_content(1024), total=math.ceil(total_size/1024), unit='KB', unit_scale=True):
                                 imageFile.write(chunk)
+                        break
                 else:
                     print("%s already exist" % os.path.basename(iurl))
         try:
