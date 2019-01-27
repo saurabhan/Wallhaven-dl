@@ -15,19 +15,23 @@ import re
 import requests
 import tqdm
 import time
-import urllib 
+import urllib
 
 os.makedirs('Wallhaven', exist_ok=True)
+BASEURL=""
+cookies=dict()
 
 def login():
+    global cookies
     print('NSFW images require login')
     username = input('Enter username: ')
     password = getpass.getpass('Enter password: ')
-    req = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password})
-    return req.cookies
+    cookies = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password}).cookies
 
 def category():
-    print('''****************************************************************
+    global BASEURL
+    print('''
+    ****************************************************************
                             Category Codes
 
     all     - Every wallpaper.
@@ -38,25 +42,9 @@ def category():
     gp      - For 'General' and 'People' wallpapers only.
     ****************************************************************
     ''')
-    ccode = input('Enter Category: ')
-    ALL = '111'
-    ANIME = '010'
-    GENERAL = '100'
-    PEOPLE = '001'
-    GENERAL_ANIME = '110'
-    GENERAL_PEOPLE = '101'
-    if ccode.lower() == "all":
-        ctag = ALL
-    elif ccode.lower() == "anime":
-        ctag = ANIME
-    elif ccode.lower() == "general":
-        ctag = GENERAL
-    elif ccode.lower() == "people":
-        ctag = PEOPLE
-    elif ccode.lower() == "ga":
-        ctag = GENERAL_ANIME
-    elif ccode.lower() == "gp":
-        ctag = GENERAL_PEOPLE
+    ccode = input('Enter Category: ').lower()
+    ctags = {'all':'111', 'anime':'010', 'general':'100', 'people':'001', 'ga':'110', 'gp':'101' }
+    ctag = ctags[ccode]
 
     print('''
     ****************************************************************
@@ -76,25 +64,50 @@ def category():
     ptag = ptags[pcode]
 
     if pcode in ['nsfw', 'wn', 'sn', 'all']:
-        cookies = login()
-    else:
-        cookies = dict()
+        login()
 
-    CATURL = 'https://alpha.wallhaven.cc/search?categories=' + \
+    BASEURL = 'https://alpha.wallhaven.cc/search?categories=' + \
         ctag + '&purity=' + ptag + '&page='
-    return (CATURL, cookies)
-
 
 def latest():
+    global BASEURL
     print('Downloading latest')
-    latesturl = 'https://alpha.wallhaven.cc/latest?page='
-    return (latesturl, dict())
+    BASEURL = 'https://alpha.wallhaven.cc/latest?page='
 
 def search():
+    global BASEURL
     query = input('Enter search query: ')
-    searchurl = 'https://alpha.wallhaven.cc/search?q=' + \
+    BASEURL = 'https://alpha.wallhaven.cc/search?q=' + \
         urllib.parse.quote_plus(query) + '&page='
-    return (searchurl, dict())
+
+def downloadPage(pageId, totalImage):
+    url = BASEURL + str(pageId)
+    urlreq = requests.get(url, cookies=cookies)
+    soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
+    soupid = soup.findAll('a', {'class': 'preview'})
+    res = re.compile(r'\d+')
+    imgId = res.findall(str(soupid))
+    imgext = ['jpg', 'png', 'bmp']
+    for imgIt in range(len(imgId)):
+        currentImage = (((pageId - 1) * 24) + (imgIt + 1))
+        filename = 'wallhaven-%s.' % imgId[imgIt]
+        url = 'https://wallpapers.wallhaven.cc/wallpapers/full/%s' % filename
+        for ext in imgext:
+            iurl = url + ext
+            osPath = os.path.join('Wallhaven', filename)
+            if not os.path.exists(osPath):
+                imgreq = requests.get(iurl, cookies=cookies)
+                if imgreq.status_code == 200:
+                    print("Downloading : %s - %s / %s" % (filename, currentImage , totalImage))
+                    with open(osPath, 'ab') as imageFile:
+                        for chunk in imgreq.iter_content(1024):
+                            imageFile.write(chunk)
+                    break
+                elif (imgreq.status_code != 403 and imgreq.status_code != 404):
+                    print("Unable to download %s - %s / %s" % (filename, currentImage , totalImage))
+            else:
+                print("%s already exist - %s / %s" % (filename, currentImage , totalImage))
+                break
 
 def main():
     Choice = input('''Choose how you want to download the image:
@@ -110,40 +123,17 @@ def main():
         choice = input('Enter choice: ')
 
     if Choice == 'category':
-        BASEURL, cookies = category()
+        category()
     elif Choice == 'latest':
-        BASEURL, cookies = latest()
+        latest()
     elif Choice == 'search':
-        BASEURL, cookies = search()
+        search()
 
     pgid = int(input('How Many pages you want to Download: '))
-    print('Number of Wallpapers to Download: ' + str(24 * pgid))
+    totalImageToDownload = str(24 * pgid)
+    print('Number of Wallpapers to Download: ' + totalImageToDownload)
     for j in range(1, pgid + 1):
-        totalImage = str(24 * pgid)
-        url = BASEURL + str(j)
-        urlreq = requests.get(url, cookies=cookies)
-        soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
-        soupid = soup.findAll('a', {'class': 'preview'})
-        res = re.compile(r'\d+')
-        imgid = res.findall(str(soupid))
-        imgext = ['jpg', 'png', 'bmp']
-        for i in range(len(imgid)):
-            currentImage = (((j - 1) * 24) + (i + 1))
-            url = 'http://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-%s.' % imgid[
-                i]
-            for ext in imgext:
-                iurl = url + ext
-                osPath = os.path.join('Wallhaven', os.path.basename(iurl))
-                if not os.path.exists(osPath):
-                    imgreq = requests.get(iurl, cookies=cookies)
-                    if imgreq.status_code == 200:
-                        print("Downloading : %s - %s / %s" % ((os.path.basename(iurl)), currentImage , totalImage))
-                        with open(osPath, 'ab') as imageFile:
-                            for chunk in imgreq.iter_content(1024):
-                                imageFile.write(chunk)
-                        break
-                else:
-                    print("%s already exist - %s / %s" % os.path.basename(iurl), currentImage , totalImage)
+        downloadPage(j, totalImageToDownload)
 
 if __name__ == '__main__':
     main()
