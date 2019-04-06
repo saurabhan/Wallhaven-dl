@@ -99,7 +99,7 @@ def downloadPage(pageId, totalImage):
                 imgreq = requests.get(iurl, cookies=cookies)
                 if imgreq.status_code == 200:
                     print("Downloading : %s - %s / %s" % (filename, currentImage , totalImage))
-                    with open(osPath, 'ab') as imageFile:
+                    with open(osPath + ext, 'ab') as imageFile:
                         for chunk in imgreq.iter_content(1024):
                             imageFile.write(chunk)
                     break
