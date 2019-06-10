@@ -10,7 +10,7 @@
 
 import os
 import getpass
-import bs4
+from bs4 import BeautifulSoup
 import re
 import requests
 import tqdm
@@ -21,12 +21,7 @@ os.makedirs('Wallhaven', exist_ok=True)
 BASEURL=""
 cookies=dict()
 
-def login():
-    global cookies
-    print('NSFW images require login')
-    username = input('Enter username: ')
-    password = getpass.getpass('Enter password: ')
-    cookies = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password}).cookies
+#NSFW Pictures Now Need To Be Accessed Through the Official API
 
 def category():
     global BASEURL
@@ -52,48 +47,43 @@ def category():
 
     sfw     - For 'Safe For Work'
     sketchy - For 'Sketchy'
-    nsfw    - For 'Not Safe For Work'
     ws      - For 'SFW' and 'Sketchy'
-    wn      - For 'SFW' and 'NSFW'
-    sn      - For 'Sketchy' and 'NSFW'
-    all     - For 'SFW', 'Sketchy' and 'NSFW'
     ****************************************************************
     ''')
     pcode = input('Enter Purity: ')
-    ptags = {'sfw':'100', 'sketchy':'010', 'nsfw':'001', 'ws':'110', 'wn':'101', 'sn':'011', 'all':'111'}
+    ptags = {'sfw':'100', 'sketchy':'010', 'ws':'110'}
     ptag = ptags[pcode]
 
-    if pcode in ['nsfw', 'wn', 'sn', 'all']:
-        login()
-
-    BASEURL = 'https://alpha.wallhaven.cc/search?categories=' + \
+    BASEURL = 'https://wallhaven.cc/search?categories=' + \
         ctag + '&purity=' + ptag + '&page='
 
 def latest():
     global BASEURL
     print('Downloading latest')
-    BASEURL = 'https://alpha.wallhaven.cc/latest?page='
+    BASEURL = 'https://wallhaven.cc/latest?page='
 
 def search():
     global BASEURL
     query = input('Enter search query: ')
-    BASEURL = 'https://alpha.wallhaven.cc/search?q=' + \
+    BASEURL = 'https://wallhaven.cc/search?q=' + \
         urllib.parse.quote_plus(query) + '&page='
 
 def downloadPage(pageId, totalImage):
     url = BASEURL + str(pageId)
     urlreq = requests.get(url, cookies=cookies)
-    soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
-    soupid = soup.findAll('a', {'class': 'preview'})
-    res = re.compile(r'\d+')
-    imgId = res.findall(str(soupid))
+    soup = BeautifulSoup(urlreq.content, 'lxml')
+    soupid = soup.findAll('figure')
+
     imgext = ['jpg', 'png', 'bmp']
-    for imgIt in range(len(imgId)):
-        currentImage = (((pageId - 1) * 24) + (imgIt + 1))
-        filename = 'wallhaven-%s.' % imgId[imgIt]
-        url = 'https://wallpapers.wallhaven.cc/wallpapers/full/%s' % filename
+    for i in range(len(soupid)):
+        currentImage = (((pageId - 1) * 24) + (i + 1))
+
+        imageid = soupid[i].attrs['data-wallpaper-id']
+        url = 'http://w.wallhaven.cc/full/%s/wallhaven-%s.' % (imageid[0:2], imageid)
+        
         for ext in imgext:
             iurl = url + ext
+            filename = os.path.basename(iurl)
             osPath = os.path.join('Wallhaven', filename)
             if not os.path.exists(osPath):
                 imgreq = requests.get(iurl, cookies=cookies)
