@@ -60,7 +60,7 @@ def category():
     ptag = ptags[pcode]
 
     BASEURL = 'https://wallhaven.cc/api/v1/search?apikey=' + APIKEY + "&categories=" +\
-        ctag + '&purity=' + ptag + '&apikey=zsUUdO08GzEyf8q7wrVqY3hNKrwKWFSm' + '&page='
+        ctag + '&purity=' + ptag + '&page='
 
 def latest():
     global BASEURL
