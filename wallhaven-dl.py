@@ -4,29 +4,25 @@
 #                                                      #
 #                 Author - Saurabh Bhan                #
 #                                                      #
-#                  dated- 26 June 2016                 #
-#                 Update - 29 June 2016                #
+#                  Dated- 26 June 2016                 #
+#                 Update - 11 June 2019                #
 ########################################################
 
 import os
 import getpass
-import bs4
 import re
 import requests
 import tqdm
 import time
 import urllib
+import json
 
 os.makedirs('Wallhaven', exist_ok=True)
 BASEURL=""
 cookies=dict()
 
-def login():
-    global cookies
-    print('NSFW images require login')
-    username = input('Enter username: ')
-    password = getpass.getpass('Enter password: ')
-    cookies = requests.post('https://alpha.wallhaven.cc/auth/login', data={'username':username, 'password':password}).cookies
+global APIKEY
+APIKEY = "EnterYourAPIKeyHere"
 
 def category():
     global BASEURL
@@ -63,51 +59,46 @@ def category():
     ptags = {'sfw':'100', 'sketchy':'010', 'nsfw':'001', 'ws':'110', 'wn':'101', 'sn':'011', 'all':'111'}
     ptag = ptags[pcode]
 
-    if pcode in ['nsfw', 'wn', 'sn', 'all']:
-        login()
-
-    BASEURL = 'https://alpha.wallhaven.cc/search?categories=' + \
+    BASEURL = 'https://wallhaven.cc/api/v1/search?apikey=' + APIKEY + "&categories=" +\
         ctag + '&purity=' + ptag + '&page='
 
 def latest():
     global BASEURL
     print('Downloading latest')
-    BASEURL = 'https://alpha.wallhaven.cc/latest?page='
+    topListRange = '1M'
+    BASEURL = 'https://wallhaven.cc/api/v1/search?apikey=' + APIKEY + '&topRange=' +\
+    topListRange + '&sorting=toplist&page='
 
 def search():
     global BASEURL
     query = input('Enter search query: ')
-    BASEURL = 'https://alpha.wallhaven.cc/search?q=' + \
+    BASEURL = 'https://wallhaven.cc/api/v1/search?apikey=' + APIKEY + '&q=' + \
         urllib.parse.quote_plus(query) + '&page='
 
 def downloadPage(pageId, totalImage):
     url = BASEURL + str(pageId)
     urlreq = requests.get(url, cookies=cookies)
-    soup = bs4.BeautifulSoup(urlreq.text, 'lxml')
-    soupid = soup.findAll('a', {'class': 'preview'})
-    res = re.compile(r'\d+')
-    imgId = res.findall(str(soupid))
-    imgext = ['jpg', 'png', 'bmp']
-    for imgIt in range(len(imgId)):
-        currentImage = (((pageId - 1) * 24) + (imgIt + 1))
-        filename = 'wallhaven-%s.' % imgId[imgIt]
-        url = 'https://wallpapers.wallhaven.cc/wallpapers/full/%s' % filename
-        for ext in imgext:
-            iurl = url + ext
-            osPath = os.path.join('Wallhaven', filename)
-            if not os.path.exists(osPath):
-                imgreq = requests.get(iurl, cookies=cookies)
-                if imgreq.status_code == 200:
-                    print("Downloading : %s - %s / %s" % (filename, currentImage , totalImage))
-                    with open(osPath, 'ab') as imageFile:
-                        for chunk in imgreq.iter_content(1024):
-                            imageFile.write(chunk)
-                    break
-                elif (imgreq.status_code != 403 and imgreq.status_code != 404):
-                    print("Unable to download %s - %s / %s" % (filename, currentImage , totalImage))
-            else:
-                print("%s already exist - %s / %s" % (filename, currentImage , totalImage))
-                break
+    pagesImages = json.loads(urlreq.content);
+    pageData = pagesImages["data"]
+
+    for i in range(len(pageData)):
+        currentImage = (((pageId - 1) * 24) + (i + 1))
+
+        url = pageData[i]["path"]
+        
+        filename = os.path.basename(url)
+        osPath = os.path.join('Wallhaven', filename)
+        if not os.path.exists(osPath):
+            imgreq = requests.get(url, cookies=cookies)
+            if imgreq.status_code == 200:
+                print("Downloading : %s - %s / %s" % (filename, currentImage , totalImage))
+                with open(osPath, 'ab') as imageFile:
+                    for chunk in imgreq.iter_content(1024):
+                        imageFile.write(chunk)
+            elif (imgreq.status_code != 403 and imgreq.status_code != 404):
+                print("Unable to download %s - %s / %s" % (filename, currentImage , totalImage))
+        else:
+            print("%s already exist - %s / %s" % (filename, currentImage , totalImage))
 
 def main():
     Choice = input('''Choose how you want to download the image:
